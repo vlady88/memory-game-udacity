@@ -12,11 +12,11 @@ let cards = ['diamond', 'diamond', 'paper-plane-o', 'paper-plane-o', 'anchor', '
  */
 
  cards = shuffle(cards);
- let deck = document.getElementsByClassName("deck");
+ let deck = document.getElementsByClassName("deck")[0];
  console.log(cards);
 
  for(const card of cards) {
-
+    deck.innerHTML = deck.innerHTML + "<li class='card'><i class='fa fa-" + card + "'></i></li>";
  }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
