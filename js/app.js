@@ -4,21 +4,59 @@
 let cards = ['diamond', 'diamond', 'paper-plane-o', 'paper-plane-o', 'anchor', 'anchor', 
     'bolt', 'bolt', 'cube', 'cube', 'leaf', 'leaf', 'bicycle', 'bicycle', 'bomb', 'bomb'];
 
+// the card waiting to be paired
+let open = null;
+
+// moves done by the player
+let moves = 0;
+
+// counts the seconds since the start of the game
+let timer = 0;
+
+// timeout function
+let timeout = null;
+
+// remaining moves until victory
+let remainingMoves = 16;
+
 /*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
+ * Initialize game's components
  */
+function initBoard() {
+    const deck = document.querySelector(".deck");
+    const stars = document.querySelector(".stars");
 
- cards = shuffle(cards);
- let deck = document.getElementsByClassName("deck")[0];
- let openCard = null;
- console.log(cards);
+    // clear cards and stars
+    deck.innerHTML = "";
+    stars.innerHTML = "";
+    
+    open = null;
+    remainingMoves = 16;
+    
+    // setup the timer
+    if(timeout != null) {
+        window.clearTimeout(timeout)
+    }
+    setupTimer(0);
+    
+    updateMoves(0);
+    $('.modal').modal('hide');
+    cards = shuffle(cards);
 
- for(const card of cards) {
-    deck.innerHTML = deck.innerHTML + "<li class='card' onclick='clickCard(this)' data-type='" + card + "'><i class='fa fa-" + card + "'></i></li>";
- }
+    // populate the deck with cards
+    for(const card of cards) {
+        deck.innerHTML = deck.innerHTML + "<li class='card' onclick='clickCard(this)' data-type='" + card + "'><i class='fa fa-" + card + "'></i></li>";
+    }
+    // add the stars
+    for(let i = 0; i < 3; i++) {
+        stars.innerHTML = stars.innerHTML + "<li><i class='fa fa-star'></i></li>";
+    }
+}
+
+// init board upon page load
+document.addEventListener('DOMContentLoaded', function () {
+    initBoard();
+});
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -45,27 +83,105 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
-
 function clickCard(card) {
-    // console.log(card.classList);
-
     if(card.classList.contains("show")) {
-        console.log("already shown");
+        // card already shown
         return;
     }
 
-    card.classList.add("show");
+    // turn the card and mark it as "open"
+    card.classList.add("show", "open");
+    updateMoves(moves + 1);
 
-    if(openCard == null) {
-        openCard = card;
+    if(open == null) {
+        // there is no previous open card
+        open = card;
     } else {
-        if(openCard.getAttribute("data-type") == card.getAttribute("data-type")) {
-            openCard = null;
+        // compare the card with the previous open card
+        if(open.getAttribute("data-type") == card.getAttribute("data-type")) {
+            // cards match
+            cardsMatch(card, open);
+            remainingMoves -= 2;
+            open = null;
         } else {
-            console.log("wrong match " + openCard);
-            openCard.classList.toggle("show");
-            card.classList.toggle("show");
-            openCard = null;
+            // cards don't match
+            cardsNotMatch(card, open);
+            open = null;
         }
     }
+
+    // check whether the game has ended
+    if(remainingMoves == 0) {
+        // update the modal text and show the modal
+        document.querySelector("#winMoves").textContent = moves;
+        const stars  = document.querySelectorAll(".fa-star").length;
+        document.querySelector("#winStars").textContent = stars;
+        document.querySelector("#winTime").textContent = timer;
+        $('.modal').modal();
+    }
+}
+
+/*
+ * apply styling for cards that match
+ */
+function cardsMatch(card1, card2) {
+    card1.classList.toggle("match");
+    card1.classList.toggle("open");
+    card1.classList.toggle("shake");
+    card2.classList.toggle("match");
+    card2.classList.toggle("open");
+    card2.classList.toggle("shake");
+
+    setTimeout(function(){ 
+        card1.classList.toggle("shake"); 
+        card2.classList.toggle("shake"); 
+    }, 500);
+}
+
+/*
+ * apply styling for cards that don't match
+ */
+function cardsNotMatch(card1, card2) {
+    card1.classList.toggle("no-match");
+    card1.classList.toggle("open");
+    card1.classList.toggle("shake");
+    card2.classList.toggle("no-match");
+    card2.classList.toggle("open");
+    card2.classList.toggle("shake");
+
+    setTimeout(function(){ 
+        card1.classList.toggle("shake"); 
+        card1.classList.toggle("no-match"); 
+        card1.classList.toggle("show"); 
+        card2.classList.toggle("shake"); 
+        card2.classList.toggle("no-match"); 
+        card2.classList.toggle("show"); 
+    }, 500);
+}
+
+/*
+ * update the number of moves
+ */
+function updateMoves(newVal) {
+    moves = newVal;
+    document.querySelector('.moves').textContent = moves;
+
+    // remove one start when the player exceeds 24 or 32 moves
+    if(moves == 24 || moves == 32) {
+        const star = document.querySelector(".fa-star");
+        const stars = document.querySelector(".stars");
+        stars.removeChild(star.parentElement);
+    }
+}
+
+/*
+ * increment the timer every second
+ */
+function setupTimer(newVal) {
+    timer = newVal;
+    document.querySelector('.timer').textContent = timer;
+
+    timeout = window.setTimeout(function() {
+        setupTimer(timer + 1);
+    }, 1000);
 }
