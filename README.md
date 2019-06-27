@@ -1,20 +1,42 @@
 # Memory Game Project
 
-## Table of Contents
+## Dependencies
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+The project uses Bootstrap for displaying modals.
 
-## Instructions
+## Implementation Details
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+* The following global variables are used:
+    - `cards` - the list of cards.
+    - `open` - the current open card that waits to be matched.
+    - `moves` - the number of moves performed by the player.
+    - `timer` - seconds spent since the start of the game.
+    - `remainingMoves` - number of remaining moves until the game is complete.
 
-To get started, open `js/app.js` and start building out the app's functionality
+* Board initialization - the method `initBoard()` initializes the board. This is called upon page load, when the player clicks on the Reload button or when the "Play again" button is clicked after finishing a game. `initBoard()` does the following:
+    - Clears the deck.
+    - Shuffles the cards.
+    - Populates the deck with cards.
+    - Refreshes the stars.
+    - Sets the timer back to 0.
+    - Resets the moves counters.
 
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
+* Card clicks - the method `clickCard(card)` is called when a card is clicked. It does the following:
+    - Turns the card face up if the card wasn't turned already.
+    - If there is another card open, then it comapres them, otherwise it marks the card as open.
+    - If the cards match, they are marked as matched, otherwise they are turned face down.
+    - Game stats are updated accordingly.
+    - If all the cards have been matched, a success message is displayed in a modal along with the game stats.
 
-## Contributing
+* Stars - The game starts with 3 stars. 
+    - If the player exceeds 24 moves, he is left with 2 stars. 
+    - If the player exceeds 32 moves, he is left with 1 star.
 
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
+* Timer - `window.setTimeout()` is used to update the timer every second.
 
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+* CSS Animations are used when 2 cards match / don't match.
+
+
+
+
+

@@ -45,7 +45,8 @@ function initBoard() {
 
     // populate the deck with cards
     for(const card of cards) {
-        deck.innerHTML = deck.innerHTML + "<li class='card' onclick='clickCard(this)' data-type='" + card + "'><i class='fa fa-" + card + "'></i></li>";
+        deck.innerHTML = deck.innerHTML + "<li class='card' onclick='clickCard(this)' data-type='" + 
+            card + "'><i class='fa fa-" + card + "'></i></li>";
     }
     // add the stars
     for(let i = 0; i < 3; i++) {
@@ -171,6 +172,7 @@ function updateMoves(newVal) {
         const star = document.querySelector(".fa-star");
         const stars = document.querySelector(".stars");
         stars.removeChild(star.parentElement);
+        stars.innerHTML = stars.innerHTML + "<li><i class='fa fa-star-o'></i></li>";
     }
 }
 
