@@ -2,7 +2,11 @@
 
 ## Dependencies
 
-The project uses Bootstrap for displaying modals.
+* Bootstrap - used for displaying modals.
+
+* jQuery - required by Bootstrap.
+
+* Popper - required by Bootstrap.
 
 ## Implementation Details
 
